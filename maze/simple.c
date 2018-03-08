@@ -19,7 +19,7 @@ void turnright(){
 		motor[leftMotor] = 70;  //right turn. extra 10 over cause it get stuckin ther frequenly
 		motor[rightMotor] = 70;
 		wait1Msec(630);
-		motor[leftMotor] = 50;
+		motor[leftMotor] = 50;// prevent possible stuck of body with wall
 		motor[rightMotor] = -50;
 		wait1Msec(800);
 		}
@@ -28,7 +28,7 @@ void turnright(){
 		motor[leftMotor] = -60;  //left turn
 		motor[rightMotor] = -60;
 		wait1Msec(550);
-		motor[leftMotor] = 50;
+		motor[leftMotor] = 50; // prevent possible stuck of body with wall
 		motor[rightMotor] = -50;
 		wait1Msec(800);
 		}
@@ -55,40 +55,27 @@ task main()
 {
 	int sonar_value;
 	while(true){
+		// init speed
 		motor[leftMotor] = 50;
 		motor[rightMotor] = -50;
 		sonar_value = SensorValue(sonarSensor);
-		
+		// if hit the wall
 		if(SensorValue(LimitSwitch1)) {
 			turnright();
 			continue;
 		}
+		// if it too close to wall
 		if(sonar_value <=3){
 			slightlyr();
 		}
+		// 3-5 is the zone it can move without conplain
+		// if it is too far
 		if(sonar_value >=5 && sonar_value < 10){
 			slightlyl();
 		}
+		// if there is a huge space n left, turn left
 		if(sonar_value >=9){
 			turnleft();
 		}
-		
-//	//left_switch = SensorValue(LimitSwitch1);
-//	//right_switch = SensorValue(LimitSwitch2);
-//	sonar_value = SensorValue(sonarSensor);
-//	if(SensorValue(LimitSwitch1) == 1 || SensorValue(LimitSwitch2) == 1){
-//		turnright();
-//		}
-//	while (SensorValue(LimitSwitch3) == 1){
-//		slightlyl();
-//		}
-//	while (SensorValue(LimitSwitch4) == 1){
-//		slightlyr();
-//		}
-//	if (sonar_value > 10){
-//		turnleft();
-//		}
-
-
 	}
 }
