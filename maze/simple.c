@@ -1,8 +1,8 @@
-
 #pragma config(Sensor, in1,    Light_sensor,   sensorReflection)
 #pragma config(Sensor, in2,    Potmeter_sensor, sensorPotentiometer)
-#pragma config(Sensor, dgtl9,  sonarSensor,    sensorSONAR_inch)
+#pragma config(Sensor, dgtl9,  sonarSensor,    sensorSONAR_cm)
 #pragma config(Sensor, dgtl11, LimitSwitch1,   sensorTouch)
+#pragma config(Sensor, dgtl12, LimitSwitch2,   sensorTouch)
 #pragma config(Motor,  port1,           rightMotor,    tmotorVex393, openLoop)
 #pragma config(Motor,  port8,           Servo,         tmotorServoContinuousRotation, openLoop)
 #pragma config(Motor,  port10,          leftMotor,     tmotorVex393, openLoop)
@@ -15,20 +15,19 @@ void ServoMove(int servoPosition){
   wait1Msec(1000);
 }
 void turnright(){
-		wait1Msec(250);
-		motor[leftMotor] = 70;  //right turn. extra 10 over cause it get stuckin ther frequenly
-		motor[rightMotor] = 70;
-		wait1Msec(630);
-		motor[leftMotor] = 50;// prevent possible stuck of body with wall
-		motor[rightMotor] = -50;
+		motor[leftMotor] = -50;
+		motor[rightMotor] = 50;
+		wait1Msec(300);
+		motor[leftMotor] = 50;  //right turn. extra 10 over cause it get stuckin ther frequenly
+		motor[rightMotor] = 50;
 		wait1Msec(800);
 		}
 	void turnleft(){
-		wait1Msec(250);
-		motor[leftMotor] = -60;  //left turn
-		motor[rightMotor] = -60;
-		wait1Msec(550);
-		motor[leftMotor] = 50; // prevent possible stuck of body with wall
+		wait1Msec(275);
+		motor[leftMotor] = -50;  //left turn
+		motor[rightMotor] = -50;
+		wait1Msec(680);
+		motor[leftMotor] = 50;
 		motor[rightMotor] = -50;
 		wait1Msec(800);
 		}
@@ -38,16 +37,16 @@ void turnright(){
 		 *then maze runner get too close to the wall, we need to acc left and slow right to turn slightly right
 		**/
 		motor[leftMotor] = 60;  //right turn
-		motor[rightMotor] = -40;
-		wait1Msec(65);
+		motor[rightMotor] = -45;
+		wait1Msec(35);
 	}
 	void slightlyl(){
 		/**
 		 *then maze runner get too far to the wall, we need to acc left and slow right to turn slightly right
 		**/
-		motor[leftMotor] = 40;  //left turn
+		motor[leftMotor] = 45;  //left turn
 		motor[rightMotor] = -60;
-		wait1Msec(65);
+		wait1Msec(35);
 
 	}
 
@@ -55,27 +54,40 @@ task main()
 {
 	int sonar_value;
 	while(true){
-		// init speed
 		motor[leftMotor] = 50;
 		motor[rightMotor] = -50;
 		sonar_value = SensorValue(sonarSensor);
-		// if hit the wall
-		if(SensorValue(LimitSwitch1)) {
+
+		if(SensorValue(LimitSwitch1) || SensorValue(LimitSwitch2)) {
 			turnright();
 			continue;
 		}
-		// if it too close to wall
-		if(sonar_value <=3){
+		if(sonar_value <12){
 			slightlyr();
 		}
-		// 3-5 is the zone it can move without conplain
-		// if it is too far
-		if(sonar_value >=5 && sonar_value < 10){
+		if(sonar_value >=13 && sonar_value < 35){
 			slightlyl();
 		}
-		// if there is a huge space n left, turn left
-		if(sonar_value >=9){
+		if(sonar_value >=35){
 			turnleft();
 		}
+
+//	//left_switch = SensorValue(LimitSwitch1);
+//	//right_switch = SensorValue(LimitSwitch2);
+//	sonar_value = SensorValue(sonarSensor);
+//	if(SensorValue(LimitSwitch1) == 1 || SensorValue(LimitSwitch2) == 1){
+//		turnright();
+//		}
+//	while (SensorValue(LimitSwitch3) == 1){
+//		slightlyl();
+//		}
+//	while (SensorValue(LimitSwitch4) == 1){
+//		slightlyr();
+//		}
+//	if (sonar_value > 10){
+//		turnleft();
+//		}
+
+
 	}
 }
